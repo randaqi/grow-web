@@ -1,77 +1,143 @@
 <template>
-  <a-form
-    :form="form"
-    @submit="handleSubmit"
-  >
-    <a-form-item
-      label="Note"
-      :label-col="{ span: 5 }"
-      :wrapper-col="{ span: 12 }"
+  <div>
+    <div class="card" v-if="messageVisible">本周还没有创建过周计划哦</div>
+    <a-list class="task-list" itemLayout="horizontal" :dataSource="weekPlan">
+      <a-list-item class="list-item" slot="renderItem" slot-scope="item, index">
+        <a slot="actions">edit</a>
+        <a-list-item-meta
+          :description="item.desc"
+        >
+        </a-list-item-meta>
+      </a-list-item>
+    </a-list>
+    <a-button class="add-btn" type="primary" block @click="showModal">新建任务</a-button>
+
+    <a-modal
+      title="Title"
+      :visible="visible"
+      @ok="handleOk"
+      :confirmLoading="confirmLoading"
+      @cancel="handleCancel"
     >
-      <a-input
-        v-decorator="[
-          'note',
-          {rules: [{ required: true, message: 'Please input your note!' }]}
-        ]"
-      />
-    </a-form-item>
-    <a-form-item
-      label="Gender"
-      :label-col="{ span: 5 }"
-      :wrapper-col="{ span: 12 }"
-    >
-      <a-select
-        v-decorator="[
-          'gender',
-          {rules: [{ required: true, message: 'Please select your gender!' }]}
-        ]"
-        placeholder="Select a option and change input text above"
-        @change="handleSelectChange"
-      >
-        <a-select-option value="male">
-          male
-        </a-select-option>
-        <a-select-option value="female">
-          female
-        </a-select-option>
-      </a-select>
-    </a-form-item>
-    <a-form-item
-      :wrapper-col="{ span: 12, offset: 5 }"
-    >
-      <a-button
-        type="primary"
-        html-type="submit"
-      >
-        Submit
-      </a-button>
-    </a-form-item>
-  </a-form>
+      <p>{{ModalText}}</p>
+    </a-modal>
+  </div>
 </template>
 
 <script>
+import axios from "axios";
 export default {
   data() {
     return {
-      formLayout: 'horizontal',
-      form: this.$form.createForm(this),
+      weekPlan: [{
+        desc: "?????????????????????????????????????????????????"
+      },{
+        desc: "!!!"
+      }],
+      messageVisible: false,
+      showAddTaskVisible: false,
+      ModalText: 'Content of the modal',
+      visible: false,
+      confirmLoading: false,
     };
   },
   methods: {
-    handleSubmit(e) {
-      e.preventDefault();
-      this.form.validateFields((err, values) => {
-        if (!err) {
-          console.log('Received values of form: ', values);
-        }
-      });
+    //获取本周周计划
+    getCurrentWeeklyPlan() {
+      let weekNum = this.getWeekNum();
+      axios({
+        method: "get",
+        url: `http://localhost:8081/weeklyPlans/${weekNum}`,
+        timeout: 10000
+      })
+        .then(res => {
+          this.weekPlan = res;
+        })
+        .catch(err => {
+          console.log(err);
+        })
+        .then(() => {
+          if (this.weekPlan === null) {
+            this.messageVisible = true;
+          } else {
+            if (this.weekPlan.length === 0) {
+              this.messageVisible = true;
+            } else {
+              this.messageVisible = false;
+            }
+          }
+        });
     },
-    handleSelectChange(value) {
-      console.log(value);
-      this.form.setFieldsValue({
-        note: `Hi, ${value === 'male' ? 'man' : 'lady'}!`,
-      });
+
+    //获取周数
+    getWeekNum() {
+      // todo
+    },
+
+    showModal() {
+      this.visible = true
+    },
+    handleOk(e) {
+      this.ModalText = 'The modal will be closed after two seconds';
+      this.confirmLoading = true;
+      setTimeout(() => {
+        this.visible = false;
+        this.confirmLoading = false;
+      }, 2000);
+    },
+    
+    handleCancel(e) {
+      console.log('Clicked cancel button');
+      this.visible = false
     },
   },
+  mounted() {
+    // this.getCurrentWeeklyPlan();
+  }
 };
 </script>
+<style>
+.add-btn {
+  position: fixed;
+  width: 60%;
+  left: 20%;
+  right: 20%;
+  bottom: 10%;
+  z-index: 1000;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+  transition: 0.3s;
+  border-radius: 5px;
+  font-size: 15px;
+  text-align: center;
+  font-weight: bold;
+}
+.card {
+  height: 60%;
+  width: 80%;
+  margin: 200px auto;
+  padding: 20px;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+  transition: 0.3s;
+  border-radius: 5px;
+  margin-bottom: 20px;
+}
+.card:hover {
+  box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2);
+}
+
+.card-text {
+  color: gray;
+}
+.task-list {
+  min-height: 350px;
+}
+.list-item{
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+  padding: 20px;
+  width: 90%;
+  border-radius: 5px;
+  margin: 10px auto;
+  display: flex;
+  flex-direction: column;
+}
+</style>
