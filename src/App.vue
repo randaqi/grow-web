@@ -7,11 +7,12 @@
     </div>
     <div class="content">
       <goal-init @addGoal="addGoal" v-if="goalInitVisible"></goal-init>
-      <goal-add @showGoalList="showGoalList" v-if="goalAddVisible" ></goal-add>
+      <goal-add @showGoalList="showGoalList" :goalData="goalData" v-if="goalAddVisible" ></goal-add>
       <goal-list  @editGoal="editGoal" v-if="goalListVisible" ></goal-list>
+      <weekly-plan  v-if="weeklyVisible" ></weekly-plan>
     </div>
     <div class="footer">
-      <a-tabs defaultActiveKey="2" tabPosition="bottom">
+      <a-tabs defaultActiveKey="2" tabPosition="bottom" @change="changeTab">
         <a-tab-pane key="1">
           <span slot="tab">
             <a-icon type="apple" />
@@ -24,7 +25,7 @@
             Tab 2
           </span>
         </a-tab-pane>
-        <a-tab-pane key="1">
+        <a-tab-pane key="3">
           <span slot="tab">
             <a-icon type="apple" />
             Tab 3
@@ -39,6 +40,7 @@
 import goalInit from './components/goal_init.vue';
 import goalAdd from './components/goal_add.vue';
 import goalList from './components/goal_list.vue';
+import weeklyPlan from './components/weekly_plan.vue';
 
 export default {
   name: 'app',
@@ -46,13 +48,25 @@ export default {
     goalInit,
     goalAdd,
     goalList,
+    weeklyPlan,
   },
   data() {
     return {
       goalInitVisible: true,
       goalAddVisible: false,
       goalListVisible: false,
+      weeklyVisible: false,
       headerTitle: '目标',
+      goalData: {
+        description: null,
+        keyResults: ['abc'],
+        reason: null,
+        statusAndBlock: null,
+        waysToCrossBlocks: null,
+        beginDate: null,
+        endDate: null,
+        imgsPath: null,
+      },
     };
   },
   methods: {
@@ -68,11 +82,25 @@ export default {
       this.goalListVisible = true;
       this.headerTitle = '目标列表';
     },
-    editGoal() {
+    editGoal(item) {
       this.goalInitVisible = false;
       this.goalAddVisible = true;
       this.goalListVisible = false;
       this.headerTitle = '修改目标';
+      this.goalData = item;
+    },
+    changeTab(activeKey) {
+      if (activeKey === '1') {
+        this.goalInitVisible = false;
+        this.goalAddVisible = false;
+        this.goalListVisible = false;
+        this.weeklyVisible = true;
+      } else if (activeKey === '2') {
+        this.goalInitVisible = true;
+        this.goalAddVisible = false;
+        this.goalListVisible = false;
+        this.weeklyVisible = false;
+      }
     },
   },
 };

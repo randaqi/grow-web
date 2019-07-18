@@ -89,24 +89,29 @@ export default {
         xs: { span: 24 },
         sm: { span: 12 },
       },
-      goalData: {
-        description: null,
-        keyResults: ['abc'],
-        reason: null,
-        statusAndBlock: null,
-        waysToCrossBlocks: null,
-        beginDate: null,
-        endDate: null,
-        imgsPath: null,
-      },
+      // goalData: {
+      //   description: null,
+      //   keyResults: ['abc'],
+      //   reason: null,
+      //   statusAndBlock: null,
+      //   waysToCrossBlocks: null,
+      //   beginDate: null,
+      //   endDate: null,
+      //   imgsPath: null,
+      // },
     };
   },
   components: {
     keyResultTag,
   },
+  props: {
+    goalData: Object,
+  },
   methods: {
     saveGoal() {
-      this.goalData.keyResults = this.goalData.keyResults.join(';');
+      if (this.goalData.keyResults && this.goalData.keyResults.length > 0) {
+        this.goalData.keyResults = this.goalData.keyResults.join(';');
+      }
       this.goalData.beginDate = this.goalData.beginDate.format('YYYY-MM-DD');
       this.goalData.endDate = this.goalData.endDate.format('YYYY-MM-DD');
       axios.post('/object/create', this.goalData)

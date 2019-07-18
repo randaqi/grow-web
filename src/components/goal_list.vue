@@ -6,8 +6,8 @@
     class="demo-list"
   >
     <a-list-item slot="renderItem" slot-scope="item">
-      <a slot="actions" @click="editGoal">edit</a>
-      <a slot="actions">delete</a>
+      <a slot="actions" @click="editGoal(item)">edit</a>
+      <a slot="actions" @click="deleteGoal(item)">delete</a>
       <a-list-item-meta
         description="Ant Design, a design language"
       >
@@ -45,15 +45,23 @@ export default {
   created() {
 
   },
-  async mounted() {
-    const res = await axios.get('/object/objects');
-    debugger;
-    this.data = res.data;
+  mounted() {
+    this.loadObjectData();
   },
   methods: {
-    editGoal() {
+    async loadObjectData() {
+      const res = await axios.get('/object/objects');
       debugger;
-      this.$emit('editGoal');
+      this.data = res.data;
+    },
+    editGoal(item) {
+      debugger;
+      console.log(item);
+      this.$emit('editGoal', item);
+    },
+    async deleteGoal(item) {
+      await axios.delete(`/object/${item.id}`);
+      this.loadObjectData();
     },
   },
 };
