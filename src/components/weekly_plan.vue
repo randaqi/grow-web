@@ -23,15 +23,16 @@
     >
       <a-form class="add_form">
         <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol" label="任务描述">
-          <a-textarea  v-model="task.desc" placeholder="请填写任务描述" :autosize="{ minRows: 2, maxRows: 6 }"/>
+          <a-textarea
+            v-model="task.desc"
+            placeholder="请填写任务描述"
+            :autosize="{ minRows: 2, maxRows: 6 }"
+          />
         </a-form-item>
         <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol" label="所属目标">
-          <a-select
-            placeholder="选择目标"
-            @change="handleSelectChange"
-          >
-            <a-select-option value="male">male</a-select-option>
-            <a-select-option value="female">female</a-select-option>
+          <a-select placeholder="选择目标" @change="handleSelectChange">
+            <a-select-option value="1">male</a-select-option>
+            <a-select-option value="2">female</a-select-option>
           </a-select>
         </a-form-item>
       </a-form>
@@ -46,47 +47,40 @@ export default {
     return {
       labelCol: {
         xs: { span: 24 },
-        sm: { span: 5 },
+        sm: { span: 5 }
       },
       wrapperCol: {
         xs: { span: 24 },
-        sm: { span: 12 },
+        sm: { span: 12 }
       },
       completionPercent: 0,
-      weekPlan: [
-        {
-          desc:
-            "Ant Design, a design language for background applications, is refined by Ant UED Team",
-          status: 0
-        },
-        {
-          desc: "!!!",
-          status: 1
-        }
-      ],
+      weekPlan: [],
       task: {},
-      messageVisible: false,
+      messageVisible: true,
       showAddTaskVisible: false,
       visible: false,
-      confirmLoading: false
+      confirmLoading: false,
+      weekNum: 0,
+      objectList: []
     };
   },
   methods: {
     //获取本周周计划
     getCurrentWeeklyPlan() {
-      let weekNum = this.getWeekNum();
+      this.getWeekNum();
       axios({
         method: "get",
-        url: `/weeklyPlans/${weekNum}`,
+        url: `/weeklyPlans/${this.weekNum}`,
         timeout: 10000
       })
         .then(res => {
-          this.weekPlan = res;
+          this.weekPlan = res.data;
         })
         .catch(err => {
           console.log(err);
         })
         .then(() => {
+          console.log(this.weekPlan)
           if (this.weekPlan === null) {
             this.messageVisible = true;
           } else {
@@ -110,17 +104,27 @@ export default {
     //获取周数
     getWeekNum() {
       // todo
+      this.weekNum = 1;
     },
 
-    showModal() {
+    async showModal() {
       this.visible = true;
+
+      //获取目标列表
+      const res = await axios.get('/object/objects');
+      this.objectList = res.data;
+      console.log(this.objectList)
     },
     handleOk(e) {
       this.confirmLoading = true;
+      this.task.weeklyPlanId = this.weekNum;
+      this.task.status = 0;
+      const para = Object.assign({}, this.task);
       axios({
         method: "post",
         url: `/tasks`,
-        timeout: 10000
+        timeout: 10000,
+        data: para
       })
         .then(res => {
           this.$message.success("上传成功");
@@ -130,7 +134,7 @@ export default {
           this.$message.error("上传失败");
         })
         .then(() => {
-          this.task = {}
+          this.task = {};
           this.visible = false;
           this.confirmLoading = false;
         });
@@ -159,12 +163,13 @@ export default {
           this.getCurrentWeeklyPlan();
         });
     },
-    handleSelectChange() {
-
+    handleSelectChange(value) {
+      console.log(value);
+      this.task.objectiveId = parseInt(value);
     }
   },
   mounted() {
-    // this.getCurrentWeeklyPlan();
+    this.getCurrentWeeklyPlan();
   }
 };
 </script>
