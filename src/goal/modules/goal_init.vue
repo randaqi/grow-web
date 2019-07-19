@@ -1,12 +1,21 @@
 <template>
   <a-form :form="form">
     <a-form-item v-bind="formItemLayoutWithOutLabel">
-       <a-tag color="blue">您还未创建任何目标</a-tag>
+      <a-tag color="blue">您还未创建任何目标</a-tag>
     </a-form-item>
     <a-form-item v-bind="formItemLayoutWithOutLabel">
-      <a-button type="primary" @click="addGoal" >
-        新建目标
+      <router-link :to="{ name: 'goalAdd' }">
+        <a-button type="primary">
+          新建目标
+        </a-button>
+      </router-link>
+    </a-form-item>
+    <a-form-item v-bind="formItemLayoutWithOutLabel">
+      <router-link :to="{ name: 'goalList' }">
+       <a-button type="primary">
+        查看目标列表
       </a-button>
+      </router-link>
     </a-form-item>
   </a-form>
 </template>
@@ -38,26 +47,8 @@ export default {
     this.form.getFieldDecorator('keys', { initialValue: [], preserve: true });
   },
   methods: {
-    addGoal() {
-      this.$emit('addGoal');
-    },
   },
 };
 </script>
 <style>
-.dynamic-delete-button {
-  cursor: pointer;
-  position: relative;
-  top: 4px;
-  font-size: 24px;
-  color: #999;
-  transition: all 0.3s;
-}
-.dynamic-delete-button:hover {
-  color: #777;
-}
-.dynamic-delete-button[disabled] {
-  cursor: not-allowed;
-  opacity: 0.5;
-}
 </style>

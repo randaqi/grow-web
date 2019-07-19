@@ -47,7 +47,7 @@ export default {
 
     showInput() {
       this.inputVisible = true;
-      this.$nextTick(function () {
+      this.$nextTick(() => {
         this.$refs.input.focus();
       });
     },

@@ -40,7 +40,8 @@
 </template>
 
 <script>
-import axios from "axios";
+import axios from 'axios';
+
 export default {
   data() {
     return {
@@ -56,58 +57,56 @@ export default {
       weekPlan: [
         {
           desc:
-            "Ant Design, a design language for background applications, is refined by Ant UED Team",
-          status: 0
+            'Ant Design, a design language for background applications, is refined by Ant UED Team',
+          status: 0,
         },
         {
-          desc: "!!!",
-          status: 1
-        }
+          desc: '!!!',
+          status: 1,
+        },
       ],
       task: {},
       messageVisible: false,
       showAddTaskVisible: false,
       visible: false,
-      confirmLoading: false
+      confirmLoading: false,
     };
   },
   methods: {
-    //获取本周周计划
+    // 获取本周周计划
     getCurrentWeeklyPlan() {
-      let weekNum = this.getWeekNum();
+      const weekNum = this.getWeekNum();
       axios({
-        method: "get",
+        method: 'get',
         url: `/weeklyPlans/${weekNum}`,
-        timeout: 10000
+        timeout: 10000,
       })
-        .then(res => {
+        .then((res) => {
           this.weekPlan = res;
         })
-        .catch(err => {
+        .catch((err) => {
           console.log(err);
         })
         .then(() => {
           if (this.weekPlan === null) {
             this.messageVisible = true;
+          } else if (this.weekPlan.length === 0) {
+            this.messageVisible = true;
           } else {
-            if (this.weekPlan.length === 0) {
-              this.messageVisible = true;
-            } else {
-              this.messageVisible = false;
-              for (let i = 0, len = this.weekPlan.length; i < len; i++) {
-                let completed = 0;
-                if (this.weekPlan[i].status === 1) {
-                  completed += 1;
-                }
-                this.completionPercent = completed / len;
-                this.completionPercent = this.completionPercent.toFixed(2);
+            this.messageVisible = false;
+            for (let i = 0, len = this.weekPlan.length; i < len; i++) {
+              let completed = 0;
+              if (this.weekPlan[i].status === 1) {
+                completed += 1;
               }
+              this.completionPercent = completed / len;
+              this.completionPercent = this.completionPercent.toFixed(2);
             }
           }
         });
     },
 
-    //获取周数
+    // 获取周数
     getWeekNum() {
       // todo
     },
@@ -118,42 +117,42 @@ export default {
     handleOk(e) {
       this.confirmLoading = true;
       axios({
-        method: "post",
-        url: `/tasks`,
-        timeout: 10000
+        method: 'post',
+        url: '/tasks',
+        timeout: 10000,
       })
-        .then(res => {
-          this.$message.success("上传成功");
+        .then((res) => {
+          this.$message.success('上传成功');
           this.getCurrentWeeklyPlan();
         })
-        .catch(err => {
-          this.$message.error("上传失败");
+        .catch((err) => {
+          this.$message.error('上传失败');
         })
         .then(() => {
-          this.task = {}
+          this.task = {};
           this.visible = false;
           this.confirmLoading = false;
         });
     },
 
     handleCancel(e) {
-      console.log("Clicked cancel button");
+      console.log('Clicked cancel button');
       this.visible = false;
     },
 
     onStatusChange(index) {
       console.log(index);
-      let task = this.weekPlan[index];
+      const task = this.weekPlan[index];
       axios({
-        method: "put",
+        method: 'put',
         url: `/tasks/${task.id}`,
-        timeout: 10000
+        timeout: 10000,
       })
-        .then(res => {
-          this.$message.success("修改成功");
+        .then((res) => {
+          this.$message.success('修改成功');
         })
-        .catch(err => {
-          this.$message.error("修改失败");
+        .catch((err) => {
+          this.$message.error('修改失败');
         })
         .then(() => {
           this.getCurrentWeeklyPlan();
@@ -161,11 +160,11 @@ export default {
     },
     handleSelectChange() {
 
-    }
+    },
   },
   mounted() {
     // this.getCurrentWeeklyPlan();
-  }
+  },
 };
 </script>
 <style>

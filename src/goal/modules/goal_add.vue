@@ -89,16 +89,6 @@ export default {
         xs: { span: 24 },
         sm: { span: 12 },
       },
-      // goalData: {
-      //   description: null,
-      //   keyResults: ['abc'],
-      //   reason: null,
-      //   statusAndBlock: null,
-      //   waysToCrossBlocks: null,
-      //   beginDate: null,
-      //   endDate: null,
-      //   imgsPath: null,
-      // },
     };
   },
   components: {
@@ -106,19 +96,28 @@ export default {
   },
   props: {
     goalData: Object,
+    goalType: String,
   },
   methods: {
-    saveGoal() {
+    async saveGoal() {
+      debugger;
       if (this.goalData.keyResults && this.goalData.keyResults.length > 0) {
         this.goalData.keyResults = this.goalData.keyResults.join(';');
       }
       this.goalData.beginDate = this.goalData.beginDate.format('YYYY-MM-DD');
       this.goalData.endDate = this.goalData.endDate.format('YYYY-MM-DD');
-      axios.post('/object/create', this.goalData)
-        .then((res) => {
-          console.log('res=>', res);
-        });
-      this.$emit('showGoalList');
+      if (this.goalType === 'add') {
+        await axios.post('/object/create', this.goalData)
+          .then((res) => {
+            console.log('res=>', res);
+          });
+      } else {
+        await axios.post('/object/update', this.goalData)
+          .then((res) => {
+            console.log('res=>', res);
+          });
+      }
+      this.$router.push('/goalList');
     },
   },
 };
@@ -126,17 +125,15 @@ export default {
 
 <style scoped>
 .add_form {
-  width: 300px;
-  height:400px;
+  width: 80%;
+  height:100%;
   margin: 5px auto 0 auto;
 }
 .add_form .ant-form-item{
   margin-bottom: 5px;
 }
 .add_div{
-  width: 300px;
-  height:500px;
-  margin: 10px auto 0 auto;
+  margin: 10px auto 70px auto;
   overflow:scroll;
 }
 </style>
