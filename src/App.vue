@@ -36,9 +36,15 @@ export default {
   height: 50px;
 }
 .footer {
-  position: absolute;
+  z-index: 100;
+  background: #f5f5f5;
+  position: fixed;
   bottom: 0;
   width: 100%;
-  height: 70px;
+  height: 60px;
 }
+.ant-tabs-bottom .ant-tabs-bottom-bar{
+  margin-top:0px;
+}
+
 </style>

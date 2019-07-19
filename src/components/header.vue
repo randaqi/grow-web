@@ -1,6 +1,6 @@
 <template>
   <div class="header">
-    <h4>{{title}}</h4>
+    <h2>{{title}}</h2>
   </div>
 </template>
 
@@ -23,7 +23,7 @@ export default {
 .header {
   z-index:100;
   background:#F5F5F5;
-   border-bottom:1px solid #D3D3D3;
+  border-bottom:1px solid #D3D3D3;
   justify-content: space-around;
   width: 100%;
     position: fixed;
@@ -33,7 +33,7 @@ export default {
     height: 50px;
     margin: 0;
 }
-.header >h4{
+.header >h2{
   margin: 15px auto 0px auto;
 }
 </style>

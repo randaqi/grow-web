@@ -1,6 +1,6 @@
 <template>
 <div class="add_div">
-  <a-form class="add_form">
+  <a-form class="add_form" :form="form">
     <!-- <div>
       {{goalData}}
     </div> -->
@@ -36,7 +36,7 @@
       :wrapper-col="wrapperCol"
       label="开始日期"
     >
-      <a-date-picker :defaultValue="$moment(new Date(), 'YYYY-MM-DD')" 
+      <a-date-picker
       v-model="goalData.beginDate" style="width: 100%" />
     </a-form-item>
        <a-form-item
@@ -44,7 +44,7 @@
       :wrapper-col="wrapperCol"
       label="结束日期"
     >
-      <a-date-picker :defaultValue="$moment(new Date(), 'YYYY-MM-DD')" 
+      <a-date-picker
       v-model="goalData.endDate" style="width: 100%" />
     </a-form-item>
 
@@ -55,7 +55,6 @@
     >
       <a-input
         v-model="goalData.statusAndBlock"
-        placeholder="I'm the content is being validated"
       />
     </a-form-item>
    <a-form-item
@@ -65,7 +64,6 @@
     >
       <a-input
         v-model="goalData.waysToCrossBlocks"
-        placeholder="I'm the content is being validated"
       />
     </a-form-item>
     <a-form-item >
@@ -94,6 +92,7 @@ export default {
         xs: { span: 24 },
         sm: { span: 12 },
       },
+      form: this.$form.createForm(this),
     };
   },
   components: {

@@ -40,17 +40,18 @@
 </template>
 
 <script>
-import axios from "axios";
+import axios from 'axios';
+
 export default {
   data() {
     return {
       labelCol: {
         xs: { span: 24 },
-        sm: { span: 5 }
+        sm: { span: 5 },
       },
       wrapperCol: {
         xs: { span: 24 },
-        sm: { span: 12 }
+        sm: { span: 12 },
       },
       completionPercent: 0,
       weekPlan: [],
@@ -60,58 +61,56 @@ export default {
       visible: false,
       confirmLoading: false,
       weekNum: 0,
-      objectList: []
+      objectList: [],
     };
   },
   methods: {
-    //获取本周周计划
+    // 获取本周周计划
     getCurrentWeeklyPlan() {
       this.getWeekNum();
       axios({
-        method: "get",
+        method: 'get',
         url: `/weeklyPlans/${this.weekNum}`,
-        timeout: 10000
+        timeout: 30000,
       })
-        .then(res => {
+        .then((res) => {
           this.weekPlan = res.data;
         })
-        .catch(err => {
+        .catch((err) => {
           console.log(err);
         })
         .then(() => {
           if (this.weekPlan === null) {
             this.messageVisible = true;
+          } else if (this.weekPlan.length === 0) {
+            this.messageVisible = true;
           } else {
-            if (this.weekPlan.length === 0) {
-              this.messageVisible = true;
-            } else {
-              let completed = 0;
-              for (let i = 0, len = this.weekPlan.length; i < len; i++) {
-                if (this.weekPlan[i].taskStatus === 1) {
-                  completed += 1;
-                  this.weekPlan[i].taskStatus = true
-                } else {
-                  this.weekPlan[i].taskStatus = false
-                }
+            let completed = 0;
+            for (let i = 0, len = this.weekPlan.length; i < len; i++) {
+              if (this.weekPlan[i].taskStatus === 1) {
+                completed += 1;
+                this.weekPlan[i].taskStatus = true;
+              } else {
+                this.weekPlan[i].taskStatus = false;
               }
-                this.completionPercent = completed / this.weekPlan.length * 100;
-                this.completionPercent = this.completionPercent.toFixed(2) + "%";
-              this.messageVisible = false;
             }
+            this.completionPercent = completed / this.weekPlan.length * 100;
+            this.completionPercent = `${this.completionPercent.toFixed(2)}%`;
+            this.messageVisible = false;
           }
         });
     },
 
-    //获取周数
+    // 获取周数
     getWeekNum() {
-      let timestamp = new Date().getTime()
-      this.weekNum = parseInt(timestamp / 604800000)
+      const timestamp = new Date().getTime();
+      this.weekNum = parseInt(timestamp / 604800000);
     },
 
     async showModal() {
       this.visible = true;
 
-      //获取目标列表
+      // 获取目标列表
       const res = await axios.get('/object/objects');
       this.objectList = res.data;
     },
@@ -121,17 +120,17 @@ export default {
       this.task.taskStatus = 0;
       const para = this.task;
       axios({
-        method: "post",
-        url: `/tasks`,
-        timeout: 10000,
-        data: para
+        method: 'post',
+        url: '/tasks',
+        timeout: 30000,
+        data: para,
       })
-        .then(res => {
-          this.$message.success("上传成功");
+        .then((res) => {
+          this.$message.success('上传成功');
           this.getCurrentWeeklyPlan();
         })
-        .catch(err => {
-          this.$message.error("上传失败");
+        .catch((err) => {
+          this.$message.error('上传失败');
         })
         .then(() => {
           this.task = {};
@@ -145,23 +144,23 @@ export default {
     },
 
     onStatusChange(index) {
-      let task = this.weekPlan[index];
+      const task = this.weekPlan[index];
       if (task.taskStatus === true) {
-        task.taskStatus = 1
+        task.taskStatus = 1;
       } else {
-        task.taskStatus = 0
+        task.taskStatus = 0;
       }
       axios({
-        method: "put",
+        method: 'put',
         url: `/tasks/${task.id}`,
-        timeout: 10000,
-        data: task
+        timeout: 30000,
+        data: task,
       })
-        .then(res => {
-          this.$message.success("修改成功");
+        .then((res) => {
+          this.$message.success('修改成功');
         })
-        .catch(err => {
-          this.$message.error("修改失败");
+        .catch((err) => {
+          this.$message.error('修改失败');
         })
         .then(() => {
           this.getCurrentWeeklyPlan();
@@ -169,11 +168,11 @@ export default {
     },
     handleSelectChange(value) {
       this.task.objectiveId = value;
-    }
+    },
   },
   mounted() {
     this.getCurrentWeeklyPlan();
-  }
+  },
 };
 </script>
 <style>

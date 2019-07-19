@@ -1,9 +1,10 @@
 <template>
   <div class="list_div">
     <a-list itemLayout="horizontal" :dataSource="data" class="demo-list">
-      <a-list-item slot="renderItem" slot-scope="item">
-        <a slot="actions" @click="editGoal(item)">edit</a>
-        <a slot="actions" @click="deleteGoal(item)">delete</a>
+      <a-list-item slot="renderItem" slot-scope="item,index">
+        <a slot="actions" @click="editGoal(item)"><a-icon theme="filled" type="edit" /></a>
+
+        <a slot="actions" @click="deleteGoal(item)"><a-icon type="delete" theme="filled" :style="{ color: 'orange' }"/></a>
         <a-list-item-meta :description="getDateRange(item)">
           <a slot="title" @click="viewGoal(item)">
             {{
@@ -14,7 +15,7 @@
           </a>
           <a-avatar
             slot="avatar"
-            src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"
+            :src="imagePath(index)"
           />
         </a-list-item-meta>
         <div :style="restDaysCls(item)">{{ item.restDays }}</div>
@@ -41,6 +42,9 @@ export default {
     this.loadObjectData();
   },
   methods: {
+    imagePath(index){
+      return "/imgs/"+(index%5+1)+".jpg";
+    },
     restDaysCls(item) {
       if (item.restDays <= 7) {
         return { color: 'red', fontSize: '20px' };

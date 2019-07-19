@@ -5,7 +5,7 @@
   <a-card-meta
     :title="userInfo.nickname"
     :description="userInfo.description">
-    <a-avatar slot="avatar" src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png" />
+    <a-avatar slot="avatar" src="/imgs/3.jpg" />
   </a-card-meta>
 </a-card>
         <Navbar/>

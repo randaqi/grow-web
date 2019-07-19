@@ -22,7 +22,7 @@
       @keyup.enter="handleInputConfirm"
     />
     <a-tag v-else @click="showInput" style="background: #fff; borderStyle: dashed;">
-      <a-icon type="plus" /> New Key Result
+      <a-icon type="plus" /> 新增关键结果
     </a-tag>
   </div>
 </template>
