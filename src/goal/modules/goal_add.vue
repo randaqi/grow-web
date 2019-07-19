@@ -27,7 +27,7 @@
     >
       <a-input
        v-model="goalData.reason"
-        placeholder="I'm the content is being validated"
+        placeholder="去三高，更健康，更长寿"
       />
     </a-form-item>
 
@@ -36,14 +36,16 @@
       :wrapper-col="wrapperCol"
       label="开始日期"
     >
-      <a-date-picker v-model="goalData.beginDate" style="width: 100%" />
+      <a-date-picker :defaultValue="$moment(new Date(), 'YYYY-MM-DD')" 
+      v-model="goalData.beginDate" style="width: 100%" />
     </a-form-item>
        <a-form-item
       :label-col="labelCol"
       :wrapper-col="wrapperCol"
       label="结束日期"
     >
-      <a-date-picker v-model="goalData.endDate" style="width: 100%" />
+      <a-date-picker :defaultValue="$moment(new Date(), 'YYYY-MM-DD')" 
+      v-model="goalData.endDate" style="width: 100%" />
     </a-form-item>
 
     <a-form-item
@@ -67,8 +69,11 @@
       />
     </a-form-item>
     <a-form-item >
-      <a-button type="primary" @click="saveGoal" >
-        保存
+       <a-button  @click="cancelGoal" >
+        取消
+      </a-button>
+      <a-button :style="{ marginLeft: '30px' }" type="primary" @click="saveGoal" >
+        确认
       </a-button>
     </a-form-item>
   </a-form>
@@ -100,24 +105,35 @@ export default {
   },
   methods: {
     async saveGoal() {
-      debugger;
-      if (this.goalData.keyResults && this.goalData.keyResults.length > 0) {
-        this.goalData.keyResults = this.goalData.keyResults.join(';');
+      const deep = this._.cloneDeep(this.goalData);
+      if (deep.keyResults && deep.keyResults.length > 0) {
+        deep.keyResults = deep.keyResults.join(';');
       }
-      this.goalData.beginDate = this.goalData.beginDate.format('YYYY-MM-DD');
-      this.goalData.endDate = this.goalData.endDate.format('YYYY-MM-DD');
+      deep.beginDate = deep.beginDate.format('YYYY-MM-DD');
+      deep.endDate = deep.endDate.format('YYYY-MM-DD');
       if (this.goalType === 'add') {
-        await axios.post('/object/create', this.goalData)
+        await axios.post('/object/create', deep)
           .then((res) => {
             console.log('res=>', res);
+            this.$message.success('新增目标成功');
+          }).catch((err) => {
+            console.log('err=>', err);
+            this.$message.error('新增目标失败');
           });
       } else {
-        await axios.post('/object/update', this.goalData)
+        await axios.post('/object/update', deep)
           .then((res) => {
             console.log('res=>', res);
+            this.$message.success('修改目标成功');
+          }).catch((err) => {
+            console.log('err=>', err);
+            this.$message.error('修改目标失败');
           });
       }
       this.$router.push('/goalList');
+    },
+    cancelGoal() {
+      this.$router.go(-1);
     },
   },
 };

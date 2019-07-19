@@ -6,7 +6,6 @@
   >
     <a-form-item
       label=""
-      :label-col="{ span: 5 }"
       :wrapper-col="{ span: 12 }"
     >
       <a-row>
@@ -15,7 +14,7 @@
         >
       </a-row>
       <a-row>
-        <span style="color:#606062;"
+        <span class="textCls"
           >{{goalData.description}}</span
         >
       </a-row>
@@ -44,7 +43,7 @@
         >
       </a-row>
       <a-row>
-        <span style="color:#606062;"
+        <span class="textCls"
           >{{goalData.reason}}</span
         >
       </a-row>
@@ -54,7 +53,7 @@
         >
       </a-row>
       <a-row>
-        <span style="color:#606062;"
+        <span class="textCls"
           >{{goalData.statusAndBlock}}</span
         >
       </a-row>
@@ -64,13 +63,13 @@
         >
       </a-row>
       <a-row>
-        <span style="color:#606062;"
+        <span class="textCls"
           >{{goalData.waysToCrossBlocks}}</span
         >
       </a-row>
     </a-form-item>
     <a-form-item
-      :wrapper-col="{ span: 12, offset: 5 }"
+      :wrapper-col="{ span: 12}"
     >
       <a-button
         type="primary"
@@ -106,6 +105,7 @@ export default {
   width: 80%;
   height:100%;
   margin: 5px auto 0 auto;
+  text-align: left;
 }
 .add_form .ant-form-item{
   margin-bottom: 5px;
@@ -113,5 +113,11 @@ export default {
 .view_div{
   margin: 10px auto 70px auto;
   overflow:scroll;
+}
+.textCls{
+  color:#606062;
+  font-weight:bolder;
+  white-space:normal;
+  word-wrap: break-word;
 }
 </style>

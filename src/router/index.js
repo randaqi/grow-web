@@ -6,6 +6,7 @@ import goalList from '../goal/goalList.vue';
 import goalEdit from '../goal/goalEdit.vue';
 import goalView from '../goal/goalView.vue';
 import weeklyPlan from '../weeklyPlan/index.vue';
+import myCenter from '../myCenter/index.vue';
 
 Vue.use(Router);
 
@@ -35,6 +36,11 @@ export default new Router({
       path: '/weeklyPlan',
       name: 'weeklyPlan',
       component: weeklyPlan,
+    },
+    {
+      path: '/myCenter',
+      name: 'myCenter',
+      component: myCenter,
     },
   ],
 });
