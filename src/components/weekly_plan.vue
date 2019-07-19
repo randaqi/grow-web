@@ -1,25 +1,40 @@
 <template>
   <div>
     <div class="card" v-if="messageVisible">本周还没有创建过周计划哦</div>
-    <a-list class="task-list" itemLayout="horizontal" :dataSource="weekPlan">
-      <a-list-item class="list-item" slot="renderItem" slot-scope="item, index">
-        <a slot="actions">edit</a>
-        <a-list-item-meta
-          :description="item.desc"
-        >
-        </a-list-item-meta>
-      </a-list-item>
-    </a-list>
+    <div v-if="!messageVisible">
+      <p>本周计划完成度:{{this.completionPercent}}</p>
+      <a-list class="task-list" itemLayout="horizontal" :dataSource="weekPlan">
+        <a-list-item class="list-item" slot="renderItem" slot-scope="item, index">
+          <a-list-item-meta class="item-desc" :description="item.desc"></a-list-item-meta>
+          <a-switch v-model="item.status" @change="onStatusChange(index)" />
+        </a-list-item>
+      </a-list>
+    </div>
     <a-button class="add-btn" type="primary" block @click="showModal">新建任务</a-button>
 
     <a-modal
-      title="Title"
+      title="新建任务"
       :visible="visible"
       @ok="handleOk"
       :confirmLoading="confirmLoading"
       @cancel="handleCancel"
+      okText="确认"
+      cancelText="取消"
     >
-      <p>{{ModalText}}</p>
+      <a-form class="add_form">
+        <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol" label="任务描述">
+          <a-textarea  v-model="task.desc" placeholder="请填写任务描述" :autosize="{ minRows: 2, maxRows: 6 }"/>
+        </a-form-item>
+        <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol" label="所属目标">
+          <a-select
+            placeholder="选择目标"
+            @change="handleSelectChange"
+          >
+            <a-select-option value="male">male</a-select-option>
+            <a-select-option value="female">female</a-select-option>
+          </a-select>
+        </a-form-item>
+      </a-form>
     </a-modal>
   </div>
 </template>
@@ -29,16 +44,31 @@ import axios from "axios";
 export default {
   data() {
     return {
-      weekPlan: [{
-        desc: "?????????????????????????????????????????????????"
-      },{
-        desc: "!!!"
-      }],
+      labelCol: {
+        xs: { span: 24 },
+        sm: { span: 5 },
+      },
+      wrapperCol: {
+        xs: { span: 24 },
+        sm: { span: 12 },
+      },
+      completionPercent: 0,
+      weekPlan: [
+        {
+          desc:
+            "Ant Design, a design language for background applications, is refined by Ant UED Team",
+          status: 0
+        },
+        {
+          desc: "!!!",
+          status: 1
+        }
+      ],
+      task: {},
       messageVisible: false,
       showAddTaskVisible: false,
-      ModalText: 'Content of the modal',
       visible: false,
-      confirmLoading: false,
+      confirmLoading: false
     };
   },
   methods: {
@@ -47,7 +77,7 @@ export default {
       let weekNum = this.getWeekNum();
       axios({
         method: "get",
-        url: `http://localhost:8081/weeklyPlans/${weekNum}`,
+        url: `/weeklyPlans/${weekNum}`,
         timeout: 10000
       })
         .then(res => {
@@ -64,6 +94,14 @@ export default {
               this.messageVisible = true;
             } else {
               this.messageVisible = false;
+              for (let i = 0, len = this.weekPlan.length; i < len; i++) {
+                let completed = 0;
+                if (this.weekPlan[i].status === 1) {
+                  completed += 1;
+                }
+                this.completionPercent = completed / len;
+                this.completionPercent = this.completionPercent.toFixed(2);
+              }
             }
           }
         });
@@ -75,21 +113,55 @@ export default {
     },
 
     showModal() {
-      this.visible = true
+      this.visible = true;
     },
     handleOk(e) {
-      this.ModalText = 'The modal will be closed after two seconds';
       this.confirmLoading = true;
-      setTimeout(() => {
-        this.visible = false;
-        this.confirmLoading = false;
-      }, 2000);
+      axios({
+        method: "post",
+        url: `/tasks`,
+        timeout: 10000
+      })
+        .then(res => {
+          this.$message.success("上传成功");
+          this.getCurrentWeeklyPlan();
+        })
+        .catch(err => {
+          this.$message.error("上传失败");
+        })
+        .then(() => {
+          this.task = {}
+          this.visible = false;
+          this.confirmLoading = false;
+        });
     },
-    
+
     handleCancel(e) {
-      console.log('Clicked cancel button');
-      this.visible = false
+      console.log("Clicked cancel button");
+      this.visible = false;
     },
+
+    onStatusChange(index) {
+      console.log(index);
+      let task = this.weekPlan[index];
+      axios({
+        method: "put",
+        url: `/tasks/${task.id}`,
+        timeout: 10000
+      })
+        .then(res => {
+          this.$message.success("修改成功");
+        })
+        .catch(err => {
+          this.$message.error("修改失败");
+        })
+        .then(() => {
+          this.getCurrentWeeklyPlan();
+        });
+    },
+    handleSelectChange() {
+
+    }
   },
   mounted() {
     // this.getCurrentWeeklyPlan();
@@ -131,13 +203,16 @@ export default {
 .task-list {
   min-height: 350px;
 }
-.list-item{
+.list-item {
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
   padding: 20px;
   width: 90%;
   border-radius: 5px;
   margin: 10px auto;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+}
+.item-desc {
+  width: 80%;
 }
 </style>
