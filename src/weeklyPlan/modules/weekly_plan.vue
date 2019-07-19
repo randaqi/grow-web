@@ -2,7 +2,7 @@
   <div>
     <div class="card" v-if="messageVisible">本周还没有创建过周计划哦</div>
     <div v-if="!messageVisible">
-      <p>本周计划完成�{{this.completionPercent}}</p>
+      <p>本周计划完成度:{{this.completionPercent}}</p>
       <a-list class="task-list" itemLayout="horizontal" :dataSource="weekPlan">
         <a-list-item class="list-item" slot="renderItem" slot-scope="item, index">
           <a-list-item-meta class="item-desc" :description="item.desc"></a-list-item-meta>
@@ -25,20 +25,16 @@
         <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol" label="任务描述">
           <a-textarea
             v-model="task.desc"
-            placeholder="请填写任务描�
+            placeholder="请填写任务描述"
             :autosize="{ minRows: 2, maxRows: 6 }"
           />
         </a-form-item>
-        <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol" label="所属目�>
+        <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol" label="所属目标">
           <a-select placeholder="选择目标" @change="handleSelectChange">
+            <div v-for="item in objectList" :key="item.id">
             <a-select-option value="1">male</a-select-option>
-            <a-select-option value="2">female</a-select-option>
-          <a-select
-            placeholder="选择目标"
-            @change="handleSelectChange"
-          >
-            <a-select-option value="male">male</a-select-option>
-            <a-select-option value="female">female</a-select-option>
+
+            </div>
           </a-select>
         </a-form-item>
       </a-form>
@@ -47,8 +43,7 @@
 </template>
 
 <script>
-import axios from 'axios';
-
+import axios from "axios";
 export default {
   data() {
     return {
@@ -62,17 +57,6 @@ export default {
       },
       completionPercent: 0,
       weekPlan: [],
-      weekPlan: [
-        {
-          desc:
-            "Ant Design, a design language for background applications, is refined by Ant UED Team",
-          status: 0
-        },
-        {
-          desc: "!!!",
-          status: 1
-        }
-      ],
       task: {},
       messageVisible: true,
       showAddTaskVisible: false,
@@ -83,40 +67,43 @@ export default {
     };
   },
   methods: {
-    // 获取本周周计�    getCurrentWeeklyPlan() {
+    //获取本周周计划
+    getCurrentWeeklyPlan() {
       this.getWeekNum();
       axios({
-        method: 'get',
+        method: "get",
         url: `/weeklyPlans/${this.weekNum}`,
-        timeout: 10000,
+        timeout: 10000
       })
-        .then((res) => {
+        .then(res => {
           this.weekPlan = res.data;
         })
-        .catch((err) => {
+        .catch(err => {
           console.log(err);
         })
         .then(() => {
           console.log(this.weekPlan)
           if (this.weekPlan === null) {
             this.messageVisible = true;
-          } else if (this.weekPlan.length === 0) {
-            this.messageVisible = true;
           } else {
-            this.messageVisible = false;
-            for (let i = 0, len = this.weekPlan.length; i < len; i++) {
-              let completed = 0;
-              if (this.weekPlan[i].status === 1) {
-                completed += 1;
+            if (this.weekPlan.length === 0) {
+              this.messageVisible = true;
+            } else {
+              this.messageVisible = false;
+              for (let i = 0, len = this.weekPlan.length; i < len; i++) {
+                let completed = 0;
+                if (this.weekPlan[i].status === 1) {
+                  completed += 1;
+                }
+                this.completionPercent = completed / len;
+                this.completionPercent = this.completionPercent.toFixed(2);
               }
-              this.completionPercent = completed / len;
-              this.completionPercent = this.completionPercent.toFixed(2);
             }
           }
         });
     },
 
-    // 获取周数
+    //获取周数
     getWeekNum() {
       // todo
       this.weekNum = 1;
@@ -136,17 +123,17 @@ export default {
       this.task.status = 0;
       const para = Object.assign({}, this.task);
       axios({
-        method: 'post',
-        url: '/tasks',
+        method: "post",
+        url: `/tasks`,
         timeout: 10000,
         data: para
       })
-        .then((res) => {
-          this.$message.success('上传成功');
+        .then(res => {
+          this.$message.success("上传成功");
           this.getCurrentWeeklyPlan();
         })
-        .catch((err) => {
-          this.$message.error('上传失败');
+        .catch(err => {
+          this.$message.error("上传失败");
         })
         .then(() => {
           this.task = {};
@@ -156,23 +143,23 @@ export default {
     },
 
     handleCancel(e) {
-      console.log('Clicked cancel button');
+      console.log("Clicked cancel button");
       this.visible = false;
     },
 
     onStatusChange(index) {
       console.log(index);
-      const task = this.weekPlan[index];
+      let task = this.weekPlan[index];
       axios({
-        method: 'put',
+        method: "put",
         url: `/tasks/${task.id}`,
-        timeout: 10000,
+        timeout: 10000
       })
-        .then((res) => {
-          this.$message.success('修改成功');
+        .then(res => {
+          this.$message.success("修改成功");
         })
-        .catch((err) => {
-          this.$message.error('修改失败');
+        .catch(err => {
+          this.$message.error("修改失败");
         })
         .then(() => {
           this.getCurrentWeeklyPlan();
@@ -180,12 +167,12 @@ export default {
     },
     handleSelectChange(value) {
       console.log(value);
-    },
+      this.task.objectiveId = parseInt(value);
     }
   },
   mounted() {
     this.getCurrentWeeklyPlan();
-  },
+  }
 };
 </script>
 <style>
