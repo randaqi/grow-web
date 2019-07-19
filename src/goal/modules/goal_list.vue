@@ -4,11 +4,12 @@
       <a-list-item slot="renderItem" slot-scope="item,index">
         <a slot="actions" @click="editGoal(item)"><a-icon theme="filled" type="edit" /></a>
 
-        <a slot="actions" @click="deleteGoal(item)"><a-icon type="delete" theme="filled" :style="{ color: 'orange' }"/></a>
+        <a slot="actions" @click="deleteGoal(item)"><a-icon type="delete" theme="filled" 
+        :style="{ color: 'orange' }"/></a>
         <a-list-item-meta :description="getDateRange(item)">
           <a slot="title" @click="viewGoal(item)">
             {{
-              item.description.length > 4
+              item.description.length > 5
                 ? `${item.description.slice(0, 4)}...`
                 : item.description
             }}
@@ -42,8 +43,8 @@ export default {
     this.loadObjectData();
   },
   methods: {
-    imagePath(index){
-      return "/imgs/"+(index%5+1)+".jpg";
+    imagePath(index) {
+      return `/imgs/${index % 5 + 1}.jpg`;
     },
     restDaysCls(item) {
       if (item.restDays <= 7) {
@@ -105,9 +106,6 @@ export default {
   font-size: 15px;
   text-align: center;
   font-weight: bold;
-}
-.demo-list {
-  min-height: 350px;
 }
 .list_div {
   width: 80%;

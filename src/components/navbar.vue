@@ -3,7 +3,6 @@
     <a-tabs
       :defaultActiveKey="activeKey"
       tabPosition="bottom"
-      @change="changeTab"
     >
       <a-tab-pane key="1">
         <span slot="tab">

@@ -5,7 +5,9 @@
       <p>本周计划完成度:{{this.completionPercent}}</p>
       <a-list class="task-list" itemLayout="horizontal" :dataSource="weekPlan">
         <a-list-item class="list-item" slot="renderItem" slot-scope="item, index">
-          <a-list-item-meta class="item-desc" :description="item.taskDesc"></a-list-item-meta>
+          <a-list-item-meta class="item-desc" :description="item.taskDesc">
+<a-avatar slot="avatar" src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1564125669&di=05db526df4409ede9bb0aa9ead785758&imgtype=jpg&er=1&src=http%3A%2F%2Fku.90sjimg.com%2Felement_origin_min_pic%2F18%2F01%2F18%2Ff45b2c7afdd89500c401e2832bbc46c8.jpg%21%2Ffwfh%2F804x804%2Fquality%2F90%2Funsharp%2Ftrue%2Fcompress%2Ftrue" />
+</a-list-item-meta>
           <a-switch v-model="item.taskStatus" @change="onStatusChange(index)" />
         </a-list-item>
       </a-list>
