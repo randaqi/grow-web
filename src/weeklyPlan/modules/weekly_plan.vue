@@ -2,7 +2,7 @@
   <div>
     <div class="card" v-if="messageVisible">本周还没有创建过周计划哦</div>
     <div v-if="!messageVisible">
-      <p>本周计划完成度:{{this.completionPercent}}</p>
+      <p>本周计划完成�{{this.completionPercent}}</p>
       <a-list class="task-list" itemLayout="horizontal" :dataSource="weekPlan">
         <a-list-item class="list-item" slot="renderItem" slot-scope="item, index">
           <a-list-item-meta class="item-desc" :description="item.desc"></a-list-item-meta>
@@ -23,9 +23,16 @@
     >
       <a-form class="add_form">
         <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol" label="任务描述">
-          <a-textarea  v-model="task.desc" placeholder="请填写任务描述" :autosize="{ minRows: 2, maxRows: 6 }"/>
+          <a-textarea
+            v-model="task.desc"
+            placeholder="请填写任务描�
+            :autosize="{ minRows: 2, maxRows: 6 }"
+          />
         </a-form-item>
-        <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol" label="所属目标">
+        <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol" label="所属目�>
+          <a-select placeholder="选择目标" @change="handleSelectChange">
+            <a-select-option value="1">male</a-select-option>
+            <a-select-option value="2">female</a-select-option>
           <a-select
             placeholder="选择目标"
             @change="handleSelectChange"
@@ -47,47 +54,50 @@ export default {
     return {
       labelCol: {
         xs: { span: 24 },
-        sm: { span: 5 },
+        sm: { span: 5 }
       },
       wrapperCol: {
         xs: { span: 24 },
-        sm: { span: 12 },
+        sm: { span: 12 }
       },
       completionPercent: 0,
+      weekPlan: [],
       weekPlan: [
         {
           desc:
-            'Ant Design, a design language for background applications, is refined by Ant UED Team',
-          status: 0,
+            "Ant Design, a design language for background applications, is refined by Ant UED Team",
+          status: 0
         },
         {
-          desc: '!!!',
-          status: 1,
-        },
+          desc: "!!!",
+          status: 1
+        }
       ],
       task: {},
-      messageVisible: false,
+      messageVisible: true,
       showAddTaskVisible: false,
       visible: false,
       confirmLoading: false,
+      weekNum: 0,
+      objectList: []
     };
   },
   methods: {
-    // 获取本周周计划
-    getCurrentWeeklyPlan() {
-      const weekNum = this.getWeekNum();
+    // 获取本周周计�    getCurrentWeeklyPlan() {
+      this.getWeekNum();
       axios({
         method: 'get',
-        url: `/weeklyPlans/${weekNum}`,
+        url: `/weeklyPlans/${this.weekNum}`,
         timeout: 10000,
       })
         .then((res) => {
-          this.weekPlan = res;
+          this.weekPlan = res.data;
         })
         .catch((err) => {
           console.log(err);
         })
         .then(() => {
+          console.log(this.weekPlan)
           if (this.weekPlan === null) {
             this.messageVisible = true;
           } else if (this.weekPlan.length === 0) {
@@ -109,17 +119,27 @@ export default {
     // 获取周数
     getWeekNum() {
       // todo
+      this.weekNum = 1;
     },
 
-    showModal() {
+    async showModal() {
       this.visible = true;
+
+      //获取目标列表
+      const res = await axios.get('/object/objects');
+      this.objectList = res.data;
+      console.log(this.objectList)
     },
     handleOk(e) {
       this.confirmLoading = true;
+      this.task.weeklyPlanId = this.weekNum;
+      this.task.status = 0;
+      const para = Object.assign({}, this.task);
       axios({
         method: 'post',
         url: '/tasks',
         timeout: 10000,
+        data: para
       })
         .then((res) => {
           this.$message.success('上传成功');
@@ -158,12 +178,13 @@ export default {
           this.getCurrentWeeklyPlan();
         });
     },
-    handleSelectChange() {
-
+    handleSelectChange(value) {
+      console.log(value);
     },
+    }
   },
   mounted() {
-    // this.getCurrentWeeklyPlan();
+    this.getCurrentWeeklyPlan();
   },
 };
 </script>
