@@ -5,8 +5,8 @@
       <p>本周计划完成度:{{this.completionPercent}}</p>
       <a-list class="task-list" itemLayout="horizontal" :dataSource="weekPlan">
         <a-list-item class="list-item" slot="renderItem" slot-scope="item, index">
-          <a-list-item-meta class="item-desc" :description="item.desc"></a-list-item-meta>
-          <a-switch v-model="item.status" @change="onStatusChange(index)" />
+          <a-list-item-meta class="item-desc" :description="item.taskDesc"></a-list-item-meta>
+          <a-switch v-model="item.taskStatus" @change="onStatusChange(index)" />
         </a-list-item>
       </a-list>
     </div>
@@ -24,17 +24,14 @@
       <a-form class="add_form">
         <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol" label="任务描述">
           <a-textarea
-            v-model="task.desc"
+            v-model="task.taskDesc"
             placeholder="请填写任务描述"
             :autosize="{ minRows: 2, maxRows: 6 }"
           />
         </a-form-item>
         <a-form-item :label-col="labelCol" :wrapper-col="wrapperCol" label="所属目标">
           <a-select placeholder="选择目标" @change="handleSelectChange">
-            <div v-for="item in objectList" :key="item.id">
-            <a-select-option value="1">male</a-select-option>
-
-            </div>
+           <a-select-option v-for="item in objectList" :key="item.id">{{item.description}}</a-select-option>
           </a-select>
         </a-form-item>
       </a-form>
@@ -82,22 +79,24 @@ export default {
           console.log(err);
         })
         .then(() => {
-          console.log(this.weekPlan)
           if (this.weekPlan === null) {
             this.messageVisible = true;
           } else {
             if (this.weekPlan.length === 0) {
               this.messageVisible = true;
             } else {
-              this.messageVisible = false;
+              let completed = 0;
               for (let i = 0, len = this.weekPlan.length; i < len; i++) {
-                let completed = 0;
-                if (this.weekPlan[i].status === 1) {
+                if (this.weekPlan[i].taskStatus === 1) {
                   completed += 1;
+                  this.weekPlan[i].taskStatus = true
+                } else {
+                  this.weekPlan[i].taskStatus = false
                 }
-                this.completionPercent = completed / len;
-                this.completionPercent = this.completionPercent.toFixed(2);
               }
+                this.completionPercent = completed / this.weekPlan.length * 100;
+                this.completionPercent = this.completionPercent.toFixed(2) + "%";
+              this.messageVisible = false;
             }
           }
         });
@@ -105,8 +104,8 @@ export default {
 
     //获取周数
     getWeekNum() {
-      // todo
-      this.weekNum = 1;
+      let timestamp = new Date().getTime()
+      this.weekNum = parseInt(timestamp / 604800000)
     },
 
     async showModal() {
@@ -115,13 +114,12 @@ export default {
       //获取目标列表
       const res = await axios.get('/object/objects');
       this.objectList = res.data;
-      console.log(this.objectList)
     },
     handleOk(e) {
       this.confirmLoading = true;
       this.task.weeklyPlanId = this.weekNum;
-      this.task.status = 0;
-      const para = Object.assign({}, this.task);
+      this.task.taskStatus = 0;
+      const para = this.task;
       axios({
         method: "post",
         url: `/tasks`,
@@ -143,17 +141,21 @@ export default {
     },
 
     handleCancel(e) {
-      console.log("Clicked cancel button");
       this.visible = false;
     },
 
     onStatusChange(index) {
-      console.log(index);
       let task = this.weekPlan[index];
+      if (task.taskStatus === true) {
+        task.taskStatus = 1
+      } else {
+        task.taskStatus = 0
+      }
       axios({
         method: "put",
         url: `/tasks/${task.id}`,
-        timeout: 10000
+        timeout: 10000,
+        data: task
       })
         .then(res => {
           this.$message.success("修改成功");
@@ -166,8 +168,7 @@ export default {
         });
     },
     handleSelectChange(value) {
-      console.log(value);
-      this.task.objectiveId = parseInt(value);
+      this.task.objectiveId = value;
     }
   },
   mounted() {

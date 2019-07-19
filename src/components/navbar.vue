@@ -1,10 +1,10 @@
 <template>
     <div class="footer">
-      <a-tabs :defaultActiveKey="activeKey" tabPosition="bottom" @change="changeTab">
+      <a-tabs :defaultActiveKey="activeKey" tabPosition="bottom">
         <a-tab-pane key="1">
           <span slot="tab">
             <router-link :to="{ name: 'weeklyPlan'}">
-                     <a-icon type="apple" />
+                     <a-icon type="fund" theme="filled"/>
                     <p>周计划</p>
                 </router-link>
           </span>
@@ -12,7 +12,7 @@
         <a-tab-pane key="2">
           <span slot="tab">
            <router-link :to="{ name: 'home'}">
-                     <a-icon type="apple" />
+                     <a-icon type="fire" theme="filled"/>
                     <p>目标</p>
                 </router-link>
           </span>
@@ -20,7 +20,7 @@
         <a-tab-pane key="3">
           <span slot="tab">
            <router-link :to="{ name: 'goalAdd'}">
-                     <a-icon type="apple" />
+                     <a-icon type="smile" theme="filled"/>
                     <p>我的</p>
                 </router-link>
           </span>
